@@ -7,9 +7,8 @@
     "typed",
     "flow"
   ],
-  "main": "lib/blob",
-  "module": "src/blob",
-  "unpkg": "dist/blob",
+  "main": "require.js",
+  "module": "blob.js",
   "author": "Irakli Gozalishvili <rfobic@gmail.com> (https://gozala.io)",
   "repository": "https://github.com/Gozala/web-blob",
   "license": "MIT",
@@ -19,33 +18,31 @@
     "@babel/preset-env": "7.4.3",
     "@babel/register": "7.4.0",
     "alias-quokka-plugin": "^0.1.0",
-    "babel-preset-flow-node": "^2.0.1",
     "blue-tape": "^1.0.0",
-    "documentation": "^9.3.1",
+    "documentation": "^10.0.0",
+    "esm": "3.2.22",
     "flow-bin": "0.97.0",
     "flow-copy-source": "^2.0.1",
+    "git-validate": "2.2.4",
     "husky": "^1.3.1",
     "lint-staged": "^8.1.5",
     "prettier": "^1.9.2",
     "rollup": "1.10.0",
-    "rollup.config.flow": "1.1.0",
+    "rollup.config.flow": "4.0.0",
     "source-map-support": "0.5.12"
   },
   "scripts": {
-    "test": "npm run build && npm run test:flow && npm run test:tape",
-    "test:tape": "blue-tape -r source-map-support/register -r @babel/register 'test/**/*.js'",
-    "test:flow": "flow check",
-    "build:clear": "rm -rf lib",
-    "build:types": "flow-copy-source --verbose src lib",
-    "build:umd": "BABEL_ENV=umd rollup -c --files web-blob",
-    "build:node": "babel --out-dir lib src",
+    "check": "flow check",
+    "test": "blue-tape -r esm 'test/**/*.js'",
     "build:api": "documentation readme --section=API src/web-blob",
     "build:docs": "documentation build --document-exported src/** -f html --o docs",
-    "build": "npm run build:node && npm run build:types",
-    "prepublishOnly": "npm run build && npm run build:umd && npm test",
-    "precommit": "lint-staged",
-    "start": "flow-copy-source --watch --verbose src lib & babel --watch --out-dir lib src"
+    "validate": "npm run check && npm run test",
+    "prepublishOnly": "npm run verify",
+    "precommit": "lint-staged"
   },
+  "pre-push": [
+    "validate"
+  ],
   "lint-staged": {
     "*.js": [
       "prettier --no-semi --write",

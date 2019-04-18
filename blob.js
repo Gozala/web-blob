@@ -1,4 +1,4 @@
-// @flow
+// @flow strict
 
 import { EOL, ReadableStream } from "./package.js"
 
@@ -18,14 +18,23 @@ export type EndingType =
   | "transparent"
   | "native"
 
-type InternalPart =
-  | BlobAdapter
+type Part =
   | Buffer
-  | Blob
+  | BlobAPI
+
+interface BlobAPI {
+  +size:number;
+  +type:string;
+  slice(start?:number, end?:number, type?:string):BlobAPI;
+  text():Promise<string>;
+  arrayBuffer():Promise<ArrayBuffer>;
+  stream():ReadableStream;
+}
 */
 
-const noparts /*:any[]*/ = []
+const noparts = []
 const noopitons = {}
+const nointernalparts = []
 
 const $type = Symbol("Blob.prototype.type")
 const $size = Symbol("Blob.prototype.size")
@@ -41,7 +50,7 @@ export class Blob {
     options /*:BlobPropertyBag*/ = noopitons
   ) {
     const { type, endings } = options
-    const chunks /*:InternalPart[]*/ = []
+    const chunks = []
     let size = 0
     for (const part of parts) {
       if (typeof part === "string") {
@@ -58,7 +67,8 @@ export class Blob {
           size + part.length
         }
       } else if (part instanceof Blob) {
-        chunks.push(part)
+        const blob /*:BlobAPI*/ = part
+        chunks.push(blob)
         size += part.size
       } else if (part instanceof ArrayBuffer) {
         const { byteLength } = part
@@ -101,15 +111,17 @@ export class Blob {
     start /*:number*/ = 0,
     end /*:number*/ = this.size,
     type /*:string*/ = ""
-  ) {
+  ) /*:Blob*/ {
     const { size } = this
     const from = start < 0 ? Math.max(size + start, 0) : Math.min(start, size)
     const to = end < 0 ? Math.max(size + end) : Math.min(end, size)
-    const byteLength = Math.max(from, to, 0)
+    const byteLength = Math.max(to - from, 0)
     const blob = new Blob()
     if (byteLength === 0) {
       return setBlobState(blob, 0, type)
     } else if (size === byteLength) {
+      return setBlobState(blob, byteLength, type, Blob$parts(this))
+    } else {
       const parts = Blob$sliceParts(this, from, to)
       return setBlobState(blob, byteLength, type, parts)
     }
@@ -139,7 +151,7 @@ export class Blob {
     return toArrayBuffer(Buffer.concat(buffers))
   }
   stream() /*:ReadableStream*/ {
-    return new ReadableStream(Blob$iterate(this))
+    return ReadableStream$fromAsyncIterable(() => Blob$iterate(this))
   }
   toString() /*:"[object Blob]"*/ {
     return "[object Blob]"
@@ -232,7 +244,7 @@ class BlobAdapter {
     const { size } = this
     const from = start < 0 ? Math.max(size + start, 0) : Math.min(start, size)
     const to = end < 0 ? Math.max(size + end) : Math.min(end, size)
-    const slice = this.source.slice(start, end, type)
+    const slice = this.source.slice(from, to, type)
     return slice instanceof Blob ? slice : BlobAdapter.from(slice)
   }
 }
@@ -251,7 +263,7 @@ const ReadableStream$fromArrayBufferPromise = promise =>
     yield new Uint8Array(buffer)
   })
 
-const Blob$parts = (blob /*:Blob*/) /*:InternalPart[]*/ => {
+const Blob$parts = (blob /*:Blob*/) /*:Part[]*/ => {
   const anyBlob /*:any*/ = blob
   return anyBlob[$parts]
 }
@@ -260,19 +272,20 @@ const Blob$sliceParts = (
   blob /*:Blob*/,
   start /*:number*/,
   end /*:number*/
-) /*:InternalPart[]*/ => {
-  const parts = Blob$parts(blob)
+) /*:Part[]*/ => {
+  const parts = Blob$parts(blob).slice(0)
   let startOffset = 0
   let endOffset = blob.size
 
   let index = 0
   while (startOffset < start) {
     const part = parts[index++]
-    startOffset += part instanceof Buffer ? part.length : part.size
+    const size = part instanceof Buffer ? part.length : part.size
+    startOffset += size
 
     if (startOffset > start) {
       parts.splice(0, index)
-      parts.unshift(part.slice(startOffset - start))
+      parts.unshift(part.slice(size - (startOffset - start)))
     } else if (startOffset === start) {
       parts.splice(0, index)
     }
@@ -282,13 +295,13 @@ const Blob$sliceParts = (
   while (endOffset > end) {
     const part = parts[index--]
     const size = part instanceof Buffer ? part.length : part.size
-    startOffset -= size
+    endOffset -= size
 
     if (endOffset < end) {
       parts.splice(index, parts.length)
-      parts.push(part.slice(size - end - endOffset))
-    } else if (startOffset === start) {
-      parts.splice(index, parts.length)
+      parts.push(part.slice(0, end - endOffset))
+    } else if (endOffset === end) {
+      parts.splice(index + 1, parts.length)
     }
   }
 
@@ -364,13 +377,14 @@ class Pump {
 }
 
 const setBlobState = (
-  blob /*:any*/,
+  blob /*:Blob*/,
   size /*:number*/,
   type /*:string*/ = "",
-  parts /*:InternalPart[]*/ = noparts
+  parts /*:Part[]*/ = nointernalparts
 ) /*:Blob*/ => {
-  self[$type] = /[^\u0020-\u007E]/.test(type) ? "" : type.toLowerCase()
-  self[$size] = size
-  self[$parts] = parts
-  return self
+  const anyBlob /*:self*/ = blob
+  anyBlob[$type] = /[^\u0020-\u007E]/.test(type) ? "" : type.toLowerCase()
+  anyBlob[$size] = size
+  anyBlob[$parts] = parts
+  return blob
 }

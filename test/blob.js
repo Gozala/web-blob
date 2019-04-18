@@ -1,7 +1,7 @@
 // @flow strict
 
-import * as lib from "../"
-import { Blob } from "../"
+import * as lib from "../blob.js"
+import { Blob } from "../blob.js"
 import test from "blue-tape"
 
 test("test baisc", async test => {
@@ -156,13 +156,45 @@ test("combined blob", async test => {
   const string = "hello world"
   const blob = new Blob([uint8, uint16, float32, string])
 
-  const [b8, b17, b32, bstr] = [
-    blob.slice(0, uint8.byteLength),
-    blob.slice(uint8.byteLength, uint8.byteLength + uint16.byteLength),
-    blob.slice(
-      uint16.byteLength,
-      uint8.byteLength + uint16.byteLength + float32.byteLength
-    ),
-    blob.slice(uint8.byteLength + uint16.byteLength + float32.byteLength)
-  ]
+  const b8 = blob.slice(0, uint8.byteLength)
+  const r8 = new Uint8Array(await b8.arrayBuffer())
+  test.isEquivalent(uint8, r8)
+
+  const b16 = blob.slice(uint8.byteLength, uint8.byteLength + uint16.byteLength)
+  const r16 = new Uint16Array(await b16.arrayBuffer())
+  test.isEquivalent(uint16, r16)
+
+  const b32 = blob.slice(
+    uint8.byteLength + uint16.byteLength,
+    uint8.byteLength + uint16.byteLength + float32.byteLength
+  )
+  const r32 = new Float32Array(await b32.arrayBuffer())
+  test.isEquivalent(float32, r32)
+
+  const bs = blob.slice(
+    uint8.byteLength + uint16.byteLength + float32.byteLength
+  )
+  test.isEqual(string, await bs.text())
+
+  test.isEqual("wo", await bs.slice(6, 8).text())
+  test.isEqual("world", await bs.slice(6).text())
+  test.isEqual("world", await blob.slice(-5).text())
+})
+
+test("emoji", async test => {
+  const emojis = `👍🤷🎉😤`
+  const blob = new Blob([emojis])
+  const nestle = new Blob([new Blob([blob, blob])])
+  test.isEqual(emojis + emojis, await nestle.text())
+})
+
+test("streams", async test => {
+  const blob = new Blob(["hello", " ", "world"], { type: "text/plain" })
+  const stream = blob.stream()
+
+  const chunks = []
+  for await (const chunk of stream) {
+    chunks.push(chunk)
+  }
+  test.deepEqual("hello world", Buffer.concat(chunks).toString())
 })

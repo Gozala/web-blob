@@ -14,9 +14,8 @@ Web API compatible Blob implementation
 Rest of the the document & provided code examples assumes that library is installed (with yarn or npm) and imported as follows:
 
 ```js
-import web-blob from "web-blob"
+import { Blob } from "web-blob"
 ```
-
 
 
 ## Install
