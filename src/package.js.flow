@@ -1,0 +1,4 @@
+// @flow strict
+
+declare export var EOL: string
+export { ReadableStream }
