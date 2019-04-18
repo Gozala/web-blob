@@ -1,5 +1,5 @@
 {
-  "version": "0.0.0",
+  "version": "1.0.0",
   "name": "web-blob",
   "description": "Web API compatible Blob implementation",
   "keywords": [
@@ -28,11 +28,12 @@
     "build:api": "documentation readme --section=API src/web-blob",
     "build:docs": "documentation build --document-exported src/** -f html --o docs",
     "validate": "npm run check && npm run test",
-    "prepublishOnly": "npm run verify",
+    "prepublishOnly": "npm run validate",
     "precommit": "lint-staged"
   },
   "pre-push": [
-    "validate"
+    "check",
+    "test"
   ],
   "lint-staged": {
     "*.js": [
