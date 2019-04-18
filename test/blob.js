@@ -194,7 +194,7 @@ test("streams", async test => {
 
   const chunks = []
   for await (const chunk of stream) {
-    chunks.push(chunk)
+    chunks.push(Buffer.from(chunk))
   }
   test.deepEqual("hello world", Buffer.concat(chunks).toString())
 })
