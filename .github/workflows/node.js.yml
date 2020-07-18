@@ -35,11 +35,11 @@ jobs:
       if: steps.cache-modules.outputs.cache-hit != 'true'
       run: npm install
     - name: Type Check
-      run: npm check
+      run: npm run check --if-present
     - name: Test ESM
-      run: npm test:es
+      run: npm test:es --if-present
     - name: Test CommonJS
-      run: npm test:cjs
+      run: npm test:cjs --if-present
   publish:
     name: Publish
     needs: test
