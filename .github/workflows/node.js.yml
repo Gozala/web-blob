@@ -37,9 +37,9 @@ jobs:
     - name: Type Check
       run: npm run check --if-present
     - name: Test ES
-      run: npm test:es --if-present
+      run: npm run test:es --if-present
     - name: Test CommonJS
-      run: npm test:cjs --if-present
+      run: npm run test:cjs --if-present
   publish:
     name: Publish
     needs: test
