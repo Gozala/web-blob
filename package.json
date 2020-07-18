@@ -7,12 +7,12 @@
     "typed"
   ],
   "type": "module",
-  "main": "./dist/cjs/lib.js",
   "module": "./src/lib.js",
+  "main": "./dist/src/lib.cjs",
   "exports": {
     ".": {
       "import": "./src/lib.js",
-      "require": "./dist/lib.cjs"
+      "require": "./dist/src/lib.cjs"
     }
   },
   "dependencies": {

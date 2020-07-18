@@ -7,5 +7,5 @@ export default {
     format: "cjs",
     entryFileNames: "[name].cjs",
   },
-  plugins: [multiInput()],
+  plugins: [multiInput({ relative: "" })],
 }
