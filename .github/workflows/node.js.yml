@@ -12,11 +12,12 @@ on:
 jobs:
   test:
     name: Build & Test
-    runs-on: ubuntu-latest, windows-latest, mac-latest
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
         node-version: [12.x, 14.x]
+        os: [macos-latest, ubuntu-latest, ubuntu-latest]
 
     steps:
     - uses: actions/checkout@v2
