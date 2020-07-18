@@ -1,2 +1,11 @@
-import config from "rollup.config.flow"
-export default config()
+import multiInput from "rollup-plugin-multi-input"
+export default {
+  input: ["src/*.js", "test/*.js"],
+  output: {
+    dir: "dist",
+    preserveModules: true,
+    format: "cjs",
+    entryFileNames: "[name].cjs",
+  },
+  plugins: [multiInput({ relative: "" })],
+}

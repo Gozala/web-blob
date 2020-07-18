@@ -1,34 +1,45 @@
 {
-  "version": "1.0.0",
   "name": "web-blob",
+  "version": "2.0.0",
   "description": "Web API compatible Blob implementation",
   "keywords": [
     "blob",
-    "typed",
-    "flow"
+    "typed"
   ],
-  "main": "require.js",
-  "module": "blob.js",
-  "author": "Irakli Gozalishvili <rfobic@gmail.com> (https://gozala.io)",
+  "type": "module",
+  "module": "./src/lib.js",
+  "main": "./dist/src/lib.cjs",
+  "exports": {
+    ".": {
+      "import": "./src/lib.js",
+      "require": "./dist/src/lib.cjs"
+    }
+  },
+  "dependencies": {
+    "web-streams-polyfill": "2.1.1"
+  },
+  "author": "Irakli Gozalishvili <contact@gozala.io> (https://gozala.io)",
   "repository": "https://github.com/Gozala/web-blob",
   "license": "MIT",
   "devDependencies": {
-    "blue-tape": "^1.0.0",
-    "documentation": "^10.0.0",
-    "esm": "3.2.22",
-    "flow-bin": "0.97.0",
+    "@types/node": "14.0.23",
     "git-validate": "2.2.4",
-    "husky": "^1.3.1",
-    "lint-staged": "^8.1.5",
-    "prettier": "^1.9.2"
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.11",
+    "prettier": "^2.0.5",
+    "rollup": "2.22.1",
+    "rollup-plugin-multi-input": "1.1.1",
+    "blue-tape": "1.0.0",
+    "tape-es": "git://github.com/gozala/tape-es",
+    "typescript": "3.9.7"
   },
   "scripts": {
-    "check": "flow check",
-    "test": "blue-tape -r esm 'test/**/*.js'",
-    "build:api": "documentation readme --section=API src/web-blob",
-    "build:docs": "documentation build --document-exported src/** -f html --o docs",
-    "validate": "npm run check && npm run test",
-    "prepublishOnly": "npm run validate",
+    "check": "tsc --noEmit",
+    "build": "rollup --config rollup.config.js",
+    "prepare": "npm run build",
+    "test:es": "tape-es 'test/**/*.spec.js'",
+    "test:cjs": "rm -rf dist && npm run build && tape dist/test/**/*.spec.cjs",
+    "test": "npm run test:es && npm run test:cjs",
     "precommit": "lint-staged"
   },
   "pre-push": [
@@ -40,20 +51,5 @@
       "prettier --no-semi --write",
       "git add"
     ]
-  },
-  "quokka": {
-    "alias": {
-      "undefined": "src/web-blob"
-    },
-    "pro": true,
-    "babel": {
-      "env": "development"
-    },
-    "plugins": [
-      "alias-quokka-plugin"
-    ]
-  },
-  "dependencies": {
-    "web-streams-polyfill": "2.0.3"
   }
 }

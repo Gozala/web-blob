@@ -1,9 +1,0 @@
-// @flow strict
-
-declare export var EOL: string
-declare class IterableReadableStream extends ReadableStream {
-  @@asyncIterator(): AsyncIterator<Uint8Array>;
-  getIterator(options?: { preventCancel: boolean }): AsyncIterator<Uint8Array>;
-}
-
-export { IterableReadableStream as ReadableStream }
