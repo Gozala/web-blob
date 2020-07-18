@@ -36,7 +36,7 @@ jobs:
       run: npm install
     - name: Type Check
       run: npm run check --if-present
-    - name: Test ESM
+    - name: Test ES
       run: npm test:es --if-present
     - name: Test CommonJS
       run: npm test:cjs --if-present
