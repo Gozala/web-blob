@@ -20,6 +20,6 @@
     "moduleResolution": "node"
   },
   "exclude": ["dist", "node_modules"],
-  "include": ["src/**/*.js"],
+  "include": ["src/**/*.js", "test/**/*.js"],
   "compileOnSave": false
 }

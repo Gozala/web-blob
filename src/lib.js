@@ -155,7 +155,10 @@ const WebBlob = class Blob {
     return text
   }
 
-  stream() /*:ReadableStream*/ {
+  /**
+   * @returns {BlobStream}
+   */
+  stream() {
     return new BlobStream(this._parts)
   }
 
@@ -177,8 +180,9 @@ export const Blob = WebBlob
 
 /**
  * Blob stream is a `ReadableStream` extension optimized to have minimal
- * overhead when consumed as `AsyncIterable`.
+ * overhead when consumed as `AsyncIterable<Uint8Array>`.
  * @extends {ReadableStream<Uint8Array>}
+ * @implements {AsyncIterable<Uint8Array>}
  */
 class BlobStream extends ReadableStream {
   /**
@@ -189,13 +193,12 @@ class BlobStream extends ReadableStream {
     super(new BlobStreamController(chunks.values()), { type: "bytes" })
     /** @private */
     this._chunks = chunks
-    /** @private */
   }
 
   /**
    * @param {Object} [_options]
    * @property {boolean} [_options.preventCancel]
-   * @returns {AsyncIterable<Uint8Array>}
+   * @returns {AsyncIterator<Uint8Array>}
    */
   async *[Symbol.asyncIterator](_options) {
     const reader = this.getReader()

@@ -1,6 +1,4 @@
 *~
 ~*
 !dist
-!lib
-!**/*.js
-!**/*.flow
+!types
