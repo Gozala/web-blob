@@ -1,6 +1,6 @@
 # web-blob
 
-![Node.js CI][Node.js CI]
+![Node.js CI][node.js ci]
 [![package][version.icon] ![downloads][downloads.icon]][package.url]
 [![styled with prettier][prettier.icon]][prettier.url]
 
@@ -44,32 +44,15 @@ for await (const chunk of blob.stream()) {
 
 ### Usage from Typescript
 
-This library makes use of [typescript using JSDOC annotations][ts-jsdoc],
-unfortunately typescript does not yet support such dependencies by default,
-requires a some awkwardness in `tsconfig.json`:
-
-```json
-{
-  "compilerOptions": {
-    "allowJs": true
-  },
-  "include": ["node_modules/web-fetch/src/lib.js"],
-  "exclude": ["node_modules"]
-}
-```
-
-- `allowJs` Tells TS to consider `.js` files.
-- include path (you'll probably have more) tells TS to look at that file
-  instead of complaining about lack of `.d.ts` files. (Necessary regardless
-  whether `node_modules` is excluded or not).
-- excluding `node_modules` is not strictly necessary, however enabling
-  `allowJs` seems to lead to problems if `node_modules` isn't ignored.
+This library makes use of [typescript using JSDOC annotations][ts-jsdoc] and
+also generates type difinitions along with typed definition maps. So you should
+be able to get all the type innference out of the box.
 
 ## Install
 
     npm install web-blob
 
-[Node.js CI]:https://github.com/Gozala/web-blob/workflows/Node.js%20CI/badge.svg
+[node.js ci]: https://github.com/Gozala/web-blob/workflows/Node.js%20CI/badge.svg
 [version.icon]: https://img.shields.io/npm/v/web-blob.svg
 [downloads.icon]: https://img.shields.io/npm/dm/web-blob.svg
 [package.url]: https://npmjs.org/package/web-blob

@@ -193,7 +193,9 @@ test("streams", async (test) => {
     const { done, value } = await reader.read()
     if (done) {
       break
-    } else {
+    }
+
+    if (value != null) {
       chunks.push(Buffer.from(value))
     }
   }
