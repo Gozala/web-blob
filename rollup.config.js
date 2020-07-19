@@ -4,6 +4,7 @@ export default {
   output: {
     dir: "dist",
     preserveModules: true,
+    sourcemap: true,
     format: "cjs",
     entryFileNames: "[name].cjs",
   },
