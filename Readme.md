@@ -1,6 +1,6 @@
 # web-blob
 
-![Node.js CI][[Node.js CI]
+![Node.js CI][Node.js CI]
 [![package][version.icon] ![downloads][downloads.icon]][package.url]
 [![styled with prettier][prettier.icon]][prettier.url]
 
