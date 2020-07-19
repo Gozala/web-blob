@@ -1,6 +1,6 @@
 # web-blob
 
-[![travis][travis.icon]][travis.url]
+![Node.js CI][[Node.js CI]
 [![package][version.icon] ![downloads][downloads.icon]][package.url]
 [![styled with prettier][prettier.icon]][prettier.url]
 
@@ -11,7 +11,7 @@ Web API compatible [Blob][] for nodejs.
 #### [fetch-blob][]
 
 The reason this library exists is because [fetch-blob][] chooses to compromise
-Web API compatibility of [`blob.stream()`][w3c blob.slice] by useing nodejs
+Web API compatibility of [`blob.stream()`][w3c blob.stream] by useing nodejs
 native [Readable][] stream. We found this to be problematic when sharing code
 across nodejs and browser rutimes. Instead this library stays true to the
 specification by using [ReadableStream][] implementation from [web-streams-polyfill][]
@@ -69,8 +69,7 @@ requires a some awkwardness in `tsconfig.json`:
 
     npm install web-blob
 
-[travis.icon]: https://travis-ci.org/Gozala/web-blob.svg?branch=master
-[travis.url]: https://travis-ci.org/Gozala/web-blob
+[Node.js CI]:https://github.com/Gozala/web-blob/workflows/Node.js%20CI/badge.svg
 [version.icon]: https://img.shields.io/npm/v/web-blob.svg
 [downloads.icon]: https://img.shields.io/npm/dm/web-blob.svg
 [package.url]: https://npmjs.org/package/web-blob
