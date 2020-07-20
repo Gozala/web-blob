@@ -46,7 +46,7 @@
     "check": "tsc --noEmit",
     "build": "npm run build:cjs && npm run build:types",
     "build:cjs": "rollup --config rollup.config.js",
-    "build:types": "tsc --project tsconfig.build.json --declarationDir dist",
+    "build:types": "tsc --project tsconfig.build.json",
     "prepare": "npm run build",
     "test:es": "tape-es 'test/**/*.spec.js'",
     "test:cjs": "rm -rf dist && npm run build && tape dist/test/**/*.spec.cjs",
