@@ -24,13 +24,13 @@
     }
   },
   "dependencies": {
-    "@types/tape": "4.13.0",
     "web-streams-polyfill": "2.1.1"
   },
   "author": "Irakli Gozalishvili <contact@gozala.io> (https://gozala.io)",
   "repository": "https://github.com/Gozala/web-blob",
   "license": "MIT",
   "devDependencies": {
+    "@types/tape": "4.13.0",
     "@types/node": "14.0.23",
     "git-validate": "2.2.4",
     "husky": "^4.2.5",
