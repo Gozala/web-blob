@@ -17,9 +17,10 @@
     "esModuleInterop": true,
     "target": "ES2018",
     "noEmit": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "rootDir": "."
   },
   "exclude": ["dist", "node_modules"],
-  "include": ["src/**/*.js"],
+  "include": ["src/**/*.js", "test/**/*.js"],
   "compileOnSave": false
 }

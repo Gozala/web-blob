@@ -1,6 +1,15 @@
 import { Blob } from "../src/lib.js"
 import { test } from "./test.js"
 
+/**
+ *
+ * @param {import('tape').Test} assert
+ * @param {Blob} blob
+ * @param {Object} expected
+ * @param {number} expected.size
+ * @param {string} [expected.type]
+ * @param {Uint8Array[]} expected.content
+ */
 const assertBlob = async (assert, blob, expected) => {
   assert.ok(blob instanceof Blob, "blob is instanceof Blob")
   assert.equal(String(blob), "[object Blob]", "String(blob) -> [object Blob]")
@@ -13,6 +22,7 @@ const assertBlob = async (assert, blob, expected) => {
   assert.equal(blob.type, expected.type || "", "blob.type")
 
   const chunks = []
+  // @ts-ignore - https://github.com/microsoft/TypeScript/issues/29867
   for await (const chunk of blob.stream()) {
     chunks.push(chunk)
   }
@@ -47,6 +57,9 @@ const assertBlob = async (assert, blob, expected) => {
   )
 }
 
+/**
+ * @param {Uint8Array[]} chunks
+ */
 const concatUint8Array = (chunks) => {
   const bytes = []
   for (const chunk of chunks) {
@@ -55,6 +68,10 @@ const concatUint8Array = (chunks) => {
   return new Uint8Array(bytes)
 }
 
+/**
+ * @param {*} input
+ * @returns {Uint8Array}
+ */
 const toUint8Array = (input) => {
   if (typeof input === "string") {
     return new TextEncoder().encode(input)

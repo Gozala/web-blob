@@ -1,7 +1,13 @@
-import tap from "tape"
+"use strict"
 
+import tape from "tape"
+
+/**
+ * @param {string} name
+ * @param {tape.TestCase} unit
+ */
 export const test = (name, unit) =>
-  tap(name, async (assert) => {
+  tape(name, async (assert) => {
     try {
       await unit(assert)
       assert.end()

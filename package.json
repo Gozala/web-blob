@@ -15,7 +15,16 @@
       "require": "./dist/src/lib.cjs"
     }
   },
+  "types": "./src/lib.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*"
+      ]
+    }
+  },
   "dependencies": {
+    "@types/tape": "4.13.0",
     "web-streams-polyfill": "2.1.1"
   },
   "author": "Irakli Gozalishvili <contact@gozala.io> (https://gozala.io)",
@@ -35,7 +44,9 @@
   },
   "scripts": {
     "check": "tsc --noEmit",
-    "build": "rollup --config rollup.config.js",
+    "build": "npm run build:cjs && npm run build:types",
+    "build:cjs": "rollup --config rollup.config.js",
+    "build:types": "tsc --project tsconfig.build.json",
     "prepare": "npm run build",
     "test:es": "tape-es 'test/**/*.spec.js'",
     "test:cjs": "rm -rf dist && npm run build && tape dist/test/**/*.spec.cjs",
