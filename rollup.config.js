@@ -1,13 +1,18 @@
 import multiInput from "rollup-plugin-multi-input"
 
-export default ["src", "test"].map((dir) => ({
-  input: `${dir}/**/*.js`,
+const config = [
+  ["src", ""],
+  ["test", "test"],
+].map(([base, relative]) => ({
+  input: [`${base}/**/*.js`],
   output: {
-    dir: "dist",
+    dir: `dist`,
     preserveModules: true,
     sourcemap: true,
     format: "cjs",
     entryFileNames: "[name].cjs",
   },
-  plugins: [multiInput({ relative: `dir` })],
+  plugins: [multiInput({ relative })],
 }))
+
+export default config
