@@ -9,6 +9,14 @@
   "type": "module",
   "module": "./src/lib.js",
   "main": "./dist/src/lib.cjs",
+  "types": "./src/lib.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*"
+      ]
+    }
+  },
   "exports": {
     ".": {
       "import": "./src/lib.js",
@@ -38,7 +46,7 @@
     "check": "tsc --noEmit",
     "build": "npm run build:cjs && npm run build:types",
     "build:cjs": "rollup --config rollup.config.js",
-    "build:types": "tsc --project tsconfig.build.json",
+    "build:types": "tsc --project tsconfig.build.json --declarationDir dist",
     "prepare": "npm run build",
     "test:es": "tape-es 'test/**/*.spec.js'",
     "test:cjs": "rm -rf dist && npm run build && tape dist/test/**/*.spec.cjs",
