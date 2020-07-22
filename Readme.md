@@ -70,3 +70,5 @@ be able to get all the type innference out of the box.
 [buffer]: https://nodejs.org/api/buffer.html
 [weakmap]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap
 [ts-jsdoc]: https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html
+[Uint8Array]:https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
+[node-fetch]:https://github.com/node-fetch/
