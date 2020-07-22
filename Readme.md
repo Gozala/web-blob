@@ -65,6 +65,7 @@ be able to get all the type innference out of the box.
 [readablestream]: https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream
 [readable]: https://nodejs.org/api/stream.html#stream_readable_streams
 [w3c blob.stream]: https://w3c.github.io/FileAPI/#dom-blob-stream
+[web-streams-polyfill]:https://www.npmjs.com/package/web-streams-polyfill
 [for await]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for-await...of
 [buffer]: https://nodejs.org/api/buffer.html
 [weakmap]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap
