@@ -16,11 +16,21 @@
     "alwaysStrict": true,
     "esModuleInterop": true,
     "target": "ES2018",
-    "noEmit": true,
+    "emitDeclarationOnly": true,
+    "declarationMap": true,
+    "outDir": "dist",
     "moduleResolution": "node",
-    "rootDir": "."
+    "rootDir": ".",
+    "incremental": true,
+    "composite": true
   },
-  "exclude": ["dist", "node_modules"],
-  "include": ["src/**/*.js", "test/**/*.js"],
+  "exclude": [
+    "dist",
+    "node_modules"
+  ],
+  "include": [
+    "src/**/*.js",
+    "test/**/*.js"
+  ],
   "compileOnSave": false
 }

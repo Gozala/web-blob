@@ -1,7 +1,8 @@
-// @ts-check
-
 import { ReadableStream, TextEncoder, TextDecoder } from "./package.js"
 
+/**
+ * @implements {globalThis.Blob}
+ */
 const WebBlob = class Blob {
   /**
    * @param {BlobPart[]} [init]
@@ -17,7 +18,7 @@ const WebBlob = class Blob {
         const bytes = new TextEncoder().encode(part)
         parts.push(bytes)
         size += bytes.byteLength
-      } else if (part instanceof Blob) {
+      } else if (part instanceof WebBlob) {
         size += part.size
         // @ts-ignore - `_parts` is marked private so TS will complain about
         // accessing it.
@@ -45,6 +46,12 @@ const WebBlob = class Blob {
     this._type = readType(options.type)
     /** @private */
     this._parts = parts
+
+    Object.defineProperties(this, {
+      _size: { enumerable: false },
+      _type: { enumerable: false },
+      _parts: { enumerable: false }
+    })
   }
 
   /**
@@ -175,7 +182,7 @@ const WebBlob = class Blob {
 }
 
 // Marking export as a DOM File object instead of custom class.
-/** @type {typeof window.Blob} */
+/** @type {typeof globalThis.Blob} */
 export const Blob = WebBlob
 
 /**
@@ -253,7 +260,6 @@ class BlobStreamController {
   }
 
   /**
-   *
    * @param {ReadableStreamDefaultController} controller
    */
   pull(controller) {

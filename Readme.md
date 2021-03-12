@@ -1,4 +1,4 @@
-# web-blob
+# @web-std/blob
 
 ![Node.js CI][node.js ci]
 [![package][version.icon] ![downloads][downloads.icon]][package.url]
@@ -35,7 +35,7 @@ to do with [node-fetch][].
 ### Usage
 
 ```js
-import { Blob } from "web-blob"
+import { Blob } from "@web-std/blob"
 const blob = new Blob(["hello", new TextEncoder().encode("world")])
 for await (const chunk of blob.stream()) {
   console.log(chunk)
@@ -50,14 +50,14 @@ be able to get all the type innference out of the box.
 
 ## Install
 
-    npm install web-blob
+    npm install @web-std/blob
 
-[node.js ci]: https://github.com/Gozala/web-blob/workflows/Node.js%20CI/badge.svg
-[version.icon]: https://img.shields.io/npm/v/web-blob.svg
-[downloads.icon]: https://img.shields.io/npm/dm/web-blob.svg
-[package.url]: https://npmjs.org/package/web-blob
-[downloads.image]: https://img.shields.io/npm/dm/web-blob.svg
-[downloads.url]: https://npmjs.org/package/web-blob
+[node.js ci]: https://github.com/web-std/blob/workflows/Node.js%20CI/badge.svg
+[version.icon]: https://img.shields.io/npm/v/@web-std/blob.svg
+[downloads.icon]: https://img.shields.io/npm/dm/@web-std/blob.svg
+[package.url]: https://npmjs.org/package/@web-std/blob
+[downloads.image]: https://img.shields.io/npm/dm/@web-std/blob.svg
+[downloads.url]: https://npmjs.org/package/@web-std/blob
 [prettier.icon]: https://img.shields.io/badge/styled_with-prettier-ff69b4.svg
 [prettier.url]: https://github.com/prettier/prettier
 [blob]: https://developer.mozilla.org/en-US/docs/Web/API/Blob/Blob
