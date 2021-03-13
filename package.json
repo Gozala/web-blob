@@ -24,23 +24,23 @@
     }
   },
   "dependencies": {
+    "web-encoding": "1.1.0",
     "web-streams-polyfill": "2.1.1"
   },
   "author": "Irakli Gozalishvili <contact@gozala.io> (https://gozala.io)",
   "repository": "https://github.com/Gozala/web-blob",
   "license": "MIT",
   "devDependencies": {
-    "@types/tape": "4.13.0",
     "@types/node": "14.0.23",
+    "estest": "10.3.6",
     "git-validate": "2.2.4",
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
     "prettier": "^2.2.1",
     "rollup": "2.22.1",
     "rollup-plugin-multi-input": "1.1.1",
-    "blue-tape": "1.0.0",
-    "tape-es": "git://github.com/gozala/tape-es",
-    "typescript": "^4.2.3"
+    "typescript": "^4.2.3",
+    "uvu": "0.5.1"
   },
   "scripts": {
     "check": "tsc --build",
@@ -48,8 +48,8 @@
     "build:cjs": "rollup --config rollup.config.js",
     "build:types": "tsc --build",
     "prepare": "npm run build",
-    "test:es": "tape-es 'test/**/*.spec.js'",
-    "test:cjs": "rm -rf dist && npm run build && tape dist/test/**/*.spec.cjs",
+    "test:es": "estest test/all.spec.js",
+    "test:cjs": "rm -rf dist && npm run build && estest dist/test/all.spec.cjs",
     "test": "npm run test:es && npm run test:cjs",
     "precommit": "lint-staged"
   },
