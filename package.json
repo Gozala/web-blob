@@ -32,7 +32,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "14.0.23",
-    "estest": "10.3.6",
+    "estest": "git://github.com/gozala/estest.git#fix/windows-support",
     "git-validate": "2.2.4",
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
