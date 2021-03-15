@@ -37,6 +37,7 @@
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
     "prettier": "^2.2.1",
+    "rimraf": "3.0.2",
     "rollup": "2.22.1",
     "rollup-plugin-multi-input": "1.1.1",
     "typescript": "^4.2.3",
@@ -49,7 +50,7 @@
     "build:types": "tsc --build",
     "prepare": "npm run build",
     "test:es": "node ./node_modules/estest/cli.js test/all.spec.js",
-    "test:cjs": "rm -rf dist && npm run build && estest dist/test/all.spec.cjs",
+    "test:cjs": "rimraf dist && npm run build && estest dist/test/all.spec.cjs",
     "test": "npm run test:es && npm run test:cjs",
     "precommit": "lint-staged"
   },
