@@ -48,7 +48,7 @@
     "build:cjs": "rollup --config rollup.config.js",
     "build:types": "tsc --build",
     "prepare": "npm run build",
-    "test:es": "estest test/all.spec.js",
+    "test:es": "node ./node_modules/estest/cli.js test/all.spec.js",
     "test:cjs": "rm -rf dist && npm run build && estest dist/test/all.spec.cjs",
     "test": "npm run test:es && npm run test:cjs",
     "precommit": "lint-staged"
