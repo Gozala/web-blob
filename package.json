@@ -32,7 +32,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "14.0.23",
-    "estest": "git://github.com/gozala/estest.git#fix/windows-support",
+    "estest": "git://github.com/gozala/estest.git#fix/windows-support-2",
     "git-validate": "2.2.4",
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
@@ -49,7 +49,7 @@
     "build:cjs": "rollup --config rollup.config.js",
     "build:types": "tsc --build",
     "prepare": "npm run build",
-    "test:es": "node ./node_modules/estest/cli.js test/all.spec.js",
+    "test:es": "estest test/all.spec.js",
     "test:cjs": "rimraf dist && npm run build && estest dist/test/all.spec.cjs",
     "test": "npm run test:es && npm run test:cjs",
     "precommit": "lint-staged"
