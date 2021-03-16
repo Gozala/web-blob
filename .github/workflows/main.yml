@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - default
+      - main
+  pull_request:
+    branches:
+      - "**"
+
+jobs:
+  check:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [15.x]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: npm install
+      - name: Typecheck Client
+        uses: gozala/typescript-error-reporter-action@v1.0.8
+  test:
+    name: Test
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        node-version: [14.x, 15.x]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Cache node_modules
+        id: cache-modules
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: ${{ matrix.node-version }}-${{ runner.OS }}-build-${{ hashFiles('package.json') }}
+      - name: Install
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: npm install
+      - name: Test ES
+        run: npm run test:es --if-present
+      - name: Test CommonJS
+        run: npm run test:cjs --if-present
+      - name: Test Web
+        run: npm run test:web --if-present
+  publish:
+    name: Publish
+    needs:
+      - test
+      - check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/default'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache node_modules
+        id: cache-modules
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: 12.x-${{ runner.OS }}-build-${{ hashFiles('package.json') }}
+      - name: Install
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: npm install
+      - name: Build
+        run: npm bulid --if-present
+      - name: Publish
+        uses: mikeal/merge-release@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}

@@ -1,17 +1,13 @@
-"use strict"
+import * as uvu from "uvu"
+import * as uvuassert from "uvu/assert"
 
-import tape from "tape"
+const deepEqual = uvuassert.equal
+const isEqual = uvuassert.equal
+const isEquivalent = uvuassert.equal
+export const assert = { ...uvuassert, deepEqual, isEqual, isEquivalent }
+export const test = uvu.test
+
 
 /**
- * @param {string} name
- * @param {tape.TestCase} unit
+ * @typedef {uvu.Test} Test
  */
-export const test = (name, unit) =>
-  tape(name, async (assert) => {
-    try {
-      await unit(assert)
-      assert.end()
-    } catch (error) {
-      assert.fail(error)
-    }
-  })

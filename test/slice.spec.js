@@ -1,16 +1,15 @@
-import { Blob } from "../src/lib.js"
-import { test } from "./test.js"
+import { Blob, TextEncoder } from "@web-std/blob"
+import { assert } from "./test.js"
 
 /**
  *
- * @param {import('tape').Test} assert
  * @param {Blob} blob
  * @param {Object} expected
  * @param {number} expected.size
  * @param {string} [expected.type]
  * @param {Uint8Array[]} expected.content
  */
-const assertBlob = async (assert, blob, expected) => {
+const assertBlob = async (blob, expected) => {
   assert.ok(blob instanceof Blob, "blob is instanceof Blob")
   assert.equal(String(blob), "[object Blob]", "String(blob) -> [object Blob]")
   assert.equal(
@@ -23,13 +22,22 @@ const assertBlob = async (assert, blob, expected) => {
 
   const chunks = []
   // @ts-ignore - https://github.com/microsoft/TypeScript/issues/29867
-  for await (const chunk of blob.stream()) {
-    chunks.push(chunk)
+  const stream = blob.stream()
+  const reader = stream.getReader()
+  while (true) {
+    const chunk = await reader.read()
+    if (chunk.done) {
+      reader.releaseLock()
+      break
+    } else {
+      chunks.push(chunk.value)
+    }
   }
+  
 
   assert.deepEqual(
-    chunks,
-    expected.content,
+    concatUint8Array(chunks),
+    concatUint8Array(expected.content),
     "blob.stream() matches expectation"
   )
 
@@ -60,7 +68,7 @@ const assertBlob = async (assert, blob, expected) => {
 /**
  * @param {Uint8Array[]} chunks
  */
-const concatUint8Array = (chunks) => {
+const concatUint8Array = chunks => {
   const bytes = []
   for (const chunk of chunks) {
     bytes.push(...chunk)
@@ -72,7 +80,7 @@ const concatUint8Array = (chunks) => {
  * @param {*} input
  * @returns {Uint8Array}
  */
-const toUint8Array = (input) => {
+const toUint8Array = input => {
   if (typeof input === "string") {
     return new TextEncoder().encode(input)
   } else if (input instanceof ArrayBuffer) {
@@ -86,166 +94,171 @@ const toUint8Array = (input) => {
   }
 }
 
-test("new Blob()", async (assert) => {
-  const blob = new Blob()
+/**
+ * @param {import('./test').Test} test
+ */
+export const test = test => {
+  test("new Blob()", async () => {
+    const blob = new Blob()
 
-  await assertBlob(assert, blob, {
-    type: "",
-    size: 0,
-    content: [],
-  })
-})
-
-test('new Blob("a=1")', async (assert) => {
-  const data = "a=1"
-  const blob = new Blob([data])
-
-  await assertBlob(assert, blob, {
-    size: 3,
-    type: "",
-    content: [toUint8Array(data)],
-  })
-})
-
-test("Blob with mixed parts", async (assert) => {
-  const parts = [
-    "a",
-    new Uint8Array([98]),
-    new Uint16Array([25699]),
-    new Uint8Array([101]).buffer,
-    Buffer.from("f"),
-    new Blob(["g"]),
-  ]
-
-  await assertBlob(assert, new Blob(parts), {
-    size: 7,
-    content: [...parts.slice(0, -1).map(toUint8Array), toUint8Array("g")],
-  })
-})
-
-test("Blob slice", async (assert) => {
-  const parts = ["hello ", "world"]
-  const blob = new Blob(parts)
-
-  await assertBlob(assert, blob, {
-    size: 11,
-    content: parts.map(toUint8Array),
+    await assertBlob(blob, {
+      type: "",
+      size: 0,
+      content: [],
+    })
   })
 
-  assertBlob(assert, blob.slice(), {
-    size: 11,
-    content: parts.map(toUint8Array),
+  test('new Blob("a=1")', async () => {
+    const data = "a=1"
+    const blob = new Blob([data])
+
+    await assertBlob(blob, {
+      size: 3,
+      type: "",
+      content: [toUint8Array(data)],
+    })
   })
 
-  assertBlob(assert, blob.slice(2), {
-    size: 9,
-    content: [toUint8Array("llo "), toUint8Array("world")],
+  test("Blob with mixed parts", async () => {
+    const parts = [
+      "a",
+      new Uint8Array([98]),
+      new Uint16Array([25699]),
+      new Uint8Array([101]).buffer,
+      new TextEncoder().encode("f"),
+      new Blob(["g"]),
+    ]
+
+    await assertBlob(new Blob(parts), {
+      size: 7,
+      content: [...parts.slice(0, -1).map(toUint8Array), toUint8Array("g")],
+    })
   })
 
-  assertBlob(assert, blob.slice(5), {
-    size: 6,
-    content: [toUint8Array(" "), toUint8Array("world")],
+  test("Blob slice", async () => {
+    const parts = ["hello ", "world"]
+    const blob = new Blob(parts)
+
+    await assertBlob(blob, {
+      size: 11,
+      content: parts.map(toUint8Array),
+    })
+
+    assertBlob(blob.slice(), {
+      size: 11,
+      content: parts.map(toUint8Array),
+    })
+
+    assertBlob(blob.slice(2), {
+      size: 9,
+      content: [toUint8Array("llo "), toUint8Array("world")],
+    })
+
+    assertBlob(blob.slice(5), {
+      size: 6,
+      content: [toUint8Array(" "), toUint8Array("world")],
+    })
+
+    assertBlob(blob.slice(6), {
+      size: 5,
+      content: [toUint8Array("world")],
+    })
+
+    assertBlob(blob.slice(5, 100), {
+      size: 6,
+      content: [toUint8Array(" "), toUint8Array("world")],
+    })
+
+    assertBlob(blob.slice(-5), {
+      size: 5,
+      content: [toUint8Array("world")],
+    })
+
+    assertBlob(blob.slice(-5, -10), {
+      size: 0,
+      content: [],
+    })
+
+    assertBlob(blob.slice(-5, -2), {
+      size: 3,
+      content: [toUint8Array("wor")],
+    })
+
+    assertBlob(blob.slice(-5, 11), {
+      size: 5,
+      content: [toUint8Array("world")],
+    })
+
+    assertBlob(blob.slice(-5, 12), {
+      size: 5,
+      content: [toUint8Array("world")],
+    })
+
+    assertBlob(blob.slice(-5, 10), {
+      size: 4,
+      content: [toUint8Array("worl")],
+    })
   })
 
-  assertBlob(assert, blob.slice(6), {
-    size: 5,
-    content: [toUint8Array("world")],
+  test("Blob type", async () => {
+    const type = "text/plain"
+    const blob = new Blob([], { type })
+    await assertBlob(blob, { size: 0, type, content: [] })
   })
 
-  assertBlob(assert, blob.slice(5, 100), {
-    size: 6,
-    content: [toUint8Array(" "), toUint8Array("world")],
+  test("Blob slice type", async () => {
+    const type = "text/plain"
+    const blob = new Blob().slice(0, 0, type)
+    await assertBlob(blob, { size: 0, type, content: [] })
   })
 
-  assertBlob(assert, blob.slice(-5), {
-    size: 5,
-    content: [toUint8Array("world")],
+  test("invalid Blob type", async () => {
+    const blob = new Blob([], { type: "\u001Ftext/plain" })
+    await assertBlob(blob, { size: 0, type: "", content: [] })
   })
 
-  assertBlob(assert, blob.slice(-5, -10), {
-    size: 0,
-    content: [],
+  test("invalid Blob slice type", async () => {
+    const blob = new Blob().slice(0, 0, "\u001Ftext/plain")
+    await assertBlob(blob, { size: 0, type: "", content: [] })
   })
 
-  assertBlob(assert, blob.slice(-5, -2), {
-    size: 3,
-    content: [toUint8Array("wor")],
+  test("normalized Blob type", async () => {
+    const blob = new Blob().slice(0, 0, "text/Plain")
+    await assertBlob(blob, { size: 0, type: "text/plain", content: [] })
   })
 
-  assertBlob(assert, blob.slice(-5, 11), {
-    size: 5,
-    content: [toUint8Array("world")],
+  test("Blob slice(0, 1)", async () => {
+    const data = "abcdefgh"
+    const blob = new Blob([data]).slice(0, 1)
+    await assertBlob(blob, {
+      size: 1,
+      content: [toUint8Array("a")],
+    })
   })
 
-  assertBlob(assert, blob.slice(-5, 12), {
-    size: 5,
-    content: [toUint8Array("world")],
+  test("Blob slice(-1)", async () => {
+    const data = "abcdefgh"
+    const blob = new Blob([data]).slice(-1)
+    await assertBlob(blob, {
+      size: 1,
+      content: [toUint8Array("h")],
+    })
   })
 
-  assertBlob(assert, blob.slice(-5, 10), {
-    size: 4,
-    content: [toUint8Array("worl")],
+  test("Blob slice(0, -1)", async () => {
+    const data = "abcdefgh"
+    const blob = new Blob([data]).slice(0, -1)
+    await assertBlob(blob, {
+      size: 7,
+      content: [toUint8Array("abcdefg")],
+    })
   })
-})
 
-test("Blob type", async (assert) => {
-  const type = "text/plain"
-  const blob = new Blob([], { type })
-  await assertBlob(assert, blob, { size: 0, type, content: [] })
-})
-
-test("Blob slice type", async (assert) => {
-  const type = "text/plain"
-  const blob = new Blob().slice(0, 0, type)
-  await assertBlob(assert, blob, { size: 0, type, content: [] })
-})
-
-test("invalid Blob type", async (assert) => {
-  const blob = new Blob([], { type: "\u001Ftext/plain" })
-  await assertBlob(assert, blob, { size: 0, type: "", content: [] })
-})
-
-test("invalid Blob slice type", async (assert) => {
-  const blob = new Blob().slice(0, 0, "\u001Ftext/plain")
-  await assertBlob(assert, blob, { size: 0, type: "", content: [] })
-})
-
-test("normalized Blob type", async (assert) => {
-  const blob = new Blob().slice(0, 0, "text/Plain")
-  await assertBlob(assert, blob, { size: 0, type: "text/plain", content: [] })
-})
-
-test("Blob slice(0, 1)", async (assert) => {
-  const data = "abcdefgh"
-  const blob = new Blob([data]).slice(0, 1)
-  await assertBlob(assert, blob, {
-    size: 1,
-    content: [toUint8Array("a")],
+  test("blob.slice(1, 2)", async () => {
+    const blob = new Blob(["a", "b", "c"]).slice(1, 2)
+    await assertBlob(blob, {
+      size: 1,
+      content: [toUint8Array("b")],
+    })
   })
-})
-
-test("Blob slice(-1)", async (assert) => {
-  const data = "abcdefgh"
-  const blob = new Blob([data]).slice(-1)
-  await assertBlob(assert, blob, {
-    size: 1,
-    content: [toUint8Array("h")],
-  })
-})
-
-test("Blob slice(0, -1)", async (assert) => {
-  const data = "abcdefgh"
-  const blob = new Blob([data]).slice(0, -1)
-  await assertBlob(assert, blob, {
-    size: 7,
-    content: [toUint8Array("abcdefg")],
-  })
-})
-
-test("blob.slice(1, 2)", async (assert) => {
-  const blob = new Blob(["a", "b", "c"]).slice(1, 2)
-  await assertBlob(assert, blob, {
-    size: 1,
-    content: [toUint8Array("b")],
-  })
-})
+}
