@@ -1,6 +1,5 @@
-import * as lib from "../src/lib.js"
-import { Blob } from "../src/lib.js"
-import { TextDecoder } from "../src/package.js"
+import { Blob, TextDecoder } from "@web-std/blob"
+import * as lib from "@web-std/blob"
 import { assert } from "./test.js"
 
 /**
@@ -9,7 +8,19 @@ import { assert } from "./test.js"
 export const test = test => {
   test("test baisc", async () => {
     assert.isEqual(typeof lib.Blob, "function")
+    assert.isEqual(typeof lib.TextDecoder, "function")
+    assert.isEqual(typeof lib.TextEncoder, "function")
+    assert.isEqual(typeof lib.ReadableStream, "function")
   })
+
+  if (globalThis.window === globalThis) {
+    test("exports built-ins", () => {
+      assert.equal(lib.Blob, globalThis.Blob)
+      assert.equal(lib.TextDecoder, globalThis.TextDecoder)
+      assert.equal(lib.TextEncoder, globalThis.TextEncoder)
+      assert.equal(lib.ReadableStream, globalThis.ReadableStream)
+    })
+  }
 
   test("test jsdom", async () => {
     const blob = new Blob(["TEST"])

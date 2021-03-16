@@ -8,21 +8,18 @@
   ],
   "type": "module",
   "module": "./src/lib.js",
+  "browser": {
+    "./src/lib.js": "./src/lib.web.js"
+  },
   "main": "./dist/src/lib.cjs",
   "exports": {
     ".": {
+      "browser": "./src/lib.web.js",
       "import": "./src/lib.js",
       "require": "./dist/src/lib.cjs"
     }
   },
-  "types": "./src/lib.d.ts",
-  "typesVersions": {
-    "*": {
-      "*": [
-        "dist/*"
-      ]
-    }
-  },
+  "types": "./dist/src/lib.d.ts",
   "dependencies": {
     "web-encoding": "1.1.0",
     "web-streams-polyfill": "2.1.1"
@@ -33,10 +30,12 @@
   "devDependencies": {
     "@types/node": "14.0.23",
     "@types/node-fetch": "2.5.8",
+    "esbuild": "0.9.2",
     "git-validate": "2.2.4",
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
     "node-fetch": "git://github.com/jimmywarting/node-fetch.git#support-other-blobs",
+    "playwright-test": "2.1.0",
     "prettier": "^2.2.1",
     "rimraf": "3.0.2",
     "rollup": "2.22.1",
@@ -51,7 +50,8 @@
     "build:types": "tsc --build",
     "prepare": "npm run build",
     "test:es": "uvu test all.spec.js",
-    "test:cjs": "rimraf dist && npm run build && node dist/test/cjs.spec.cjs",
+    "test:web": "playwright-test -r uvu test/web.spec.js",
+    "test:cjs": "rimraf dist && npm run build && node dist/test/web.spec.cjs",
     "test": "npm run test:es && npm run test:cjs",
     "precommit": "lint-staged"
   },

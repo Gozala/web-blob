@@ -1,6 +1,5 @@
-import { Blob } from "../src/lib.js"
+import { Blob, TextEncoder } from "@web-std/blob"
 import { assert } from "./test.js"
-import { TextEncoder } from "../src/package.js"
 
 /**
  *
@@ -23,13 +22,22 @@ const assertBlob = async (blob, expected) => {
 
   const chunks = []
   // @ts-ignore - https://github.com/microsoft/TypeScript/issues/29867
-  for await (const chunk of blob.stream()) {
-    chunks.push(chunk)
+  const stream = blob.stream()
+  const reader = stream.getReader()
+  while (true) {
+    const chunk = await reader.read()
+    if (chunk.done) {
+      reader.releaseLock()
+      break
+    } else {
+      chunks.push(chunk.value)
+    }
   }
+  
 
   assert.deepEqual(
-    chunks,
-    expected.content,
+    concatUint8Array(chunks),
+    concatUint8Array(expected.content),
     "blob.stream() matches expectation"
   )
 

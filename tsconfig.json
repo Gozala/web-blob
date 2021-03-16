@@ -22,7 +22,13 @@
     "moduleResolution": "node",
     "rootDir": ".",
     "incremental": true,
-    "composite": true
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "@web-std/blob": [
+        "./src/lib.js"
+      ]
+    }
   },
   "exclude": [
     "dist",

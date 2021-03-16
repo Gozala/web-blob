@@ -183,7 +183,7 @@ const WebBlob = class Blob {
 
 // Marking export as a DOM File object instead of custom class.
 /** @type {typeof globalThis.Blob} */
-export const Blob = WebBlob
+const Blob = WebBlob
 
 /**
  * Blob stream is a `ReadableStream` extension optimized to have minimal
@@ -280,3 +280,5 @@ const readType = (input = "") => {
   const type = String(input).toLowerCase()
   return /[^\u0020-\u007E]/.test(type) ? "" : type
 }
+
+export { Blob, ReadableStream, TextEncoder, TextDecoder }
