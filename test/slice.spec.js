@@ -1,5 +1,6 @@
 import { Blob } from "../src/lib.js"
 import { assert } from "./test.js"
+import { TextEncoder } from "../src/package.js"
 
 /**
  *
@@ -116,7 +117,7 @@ export const test = test => {
       new Uint8Array([98]),
       new Uint16Array([25699]),
       new Uint8Array([101]).buffer,
-      Buffer.from("f"),
+      new TextEncoder().encode("f"),
       new Blob(["g"]),
     ]
 

@@ -1,5 +1,6 @@
 import * as lib from "../src/lib.js"
 import { Blob } from "../src/lib.js"
+import { TextDecoder } from "../src/package.js"
 import { assert } from "./test.js"
 
 /**
@@ -206,10 +207,10 @@ export const test = test => {
       }
 
       if (value != null) {
-        chunks.push(Buffer.from(value))
+        chunks.push(new TextDecoder().decode(value))
       }
     }
 
-    assert.deepEqual("hello world", Buffer.concat(chunks).toString())
+    assert.deepEqual("hello world", chunks.join(""))
   })
 }
